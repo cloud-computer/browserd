@@ -10,7 +10,7 @@ RUN npm run dist
 RUN cp ./components/stream-provider/bin/*.deb ./
 
 # setup runtime
-FROM debian:stretch-slim as runner
+FROM node:latest as runner
 # Create a lower-priv user (electron) to run as
 RUN groupadd -r electron \
   && useradd -r -g electron -G audio,video,tty,dialout electron \

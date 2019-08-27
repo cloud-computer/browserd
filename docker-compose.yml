@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+
+  signaling-server:
+    image: cloudnativecomputer/webrtc-signal-http:latest
+    ports:
+      - 3000:3000
+
+  turn-server:
+    image: nazarpc/coturn:latest
+    environment:
+      ANONYMOUS: 1
+    ports:
+      - 3478:3478
+      - 3478:3478/udp
+      - 65435-65535:65435-65535
+
+  stream-provider:
+    build:
+      context: .
+      dockerfile: ./components/stream-provider/Dockerfile
+    depends_on:
+      - turn-server
+    environment:
+      EXP_HIDE_STREAMER: 'false'
+      POLL_URL: http://signaling-server:3000
+      POLL_INTERVAL: 20
+      SERVICE_URL: https://gensan.apolidata.com
+      TURN_URL: turn:turn-server:3478
+      WIDTH: 1024
+      HEIGHT: 768
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+  stream-consumer:
+    build:
+      context: .
+      dockerfile: ./components/stream-consumer/Dockerfile
+    environment:
+      SERVICE_URL: https://gensan.apolidata.com
+      TURN_URL: turn:turn-server:3478
+    ports:
+      - 8080:8080
