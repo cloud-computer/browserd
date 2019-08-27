@@ -30,15 +30,10 @@ services:
       TURN_URL: turn:turn-server:3478
       WIDTH: 1024
       HEIGHT: 768
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
 
   stream-consumer:
     build:
       context: .
       dockerfile: ./components/stream-consumer/Dockerfile
-    environment:
-      SERVICE_URL: https://gensan.apolidata.com
-      TURN_URL: turn:turn-server:3478
     ports:
       - 8080:8080
